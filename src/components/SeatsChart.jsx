@@ -68,6 +68,24 @@ const SeatsChart = () => {
         priceFormatter: function(price) {
             return '$' + price;
         },
+         priceFormatter: function(price) {
+          return '$' + price;
+      },
+      pricing: [
+        {'category': 1, 'ticketTypes': [
+            {'ticketType': 'adult', 'price': 30},
+            {'ticketType': 'child', 'price': 20}
+        ]},
+        {'category': 2, 'ticketTypes': [
+            {'ticketType': 'adult', 'price': 40},
+            {'ticketType': 'child', 'price': 30},
+            {'ticketType': '65+', 'price': 25}
+        ]},
+        {'category': 3, 'price': 50}
+    ],
+    priceFormatter: function(price) {
+        return '$' + price;
+    },
         session: "manual",
         onObjectSelected: (object) => {
           if (object.status === "reservedByToken" || object.status === "free") {
