@@ -60,6 +60,14 @@ const SeatsChart = () => {
         event: SEATS_CONFIG.eventkey,
         holdToken: holdToken,
         divId: "chart-container",
+         pricing: [
+            {'category': 1, 'price': 30},
+            {'category': 2, 'price': 40},
+            {'category': 3, 'price': 50}
+        ],
+        priceFormatter: function(price) {
+            return '$' + price;
+        },
         session: "manual",
         onObjectSelected: (object) => {
           if (object.status === "reservedByToken" || object.status === "free") {
