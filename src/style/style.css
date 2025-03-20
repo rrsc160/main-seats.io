@@ -107,7 +107,8 @@
 
 .selected-seats li.no-seats {
   text-align: center;
-  color: #7f8c8d;
+  //color: #7f8c8d;
+  color: #141416;
 }
 
 .seats-chart-container.day {
