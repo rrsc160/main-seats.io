@@ -56,6 +56,7 @@ const SeatsChart = () => {
       publicKey: SEATS_CONFIG.Publicworkspacekey,
       event: SEATS_CONFIG.eventkey,
       holdToken: token,
+       colorScheme: 'dark',
       divId: "chart-container",
       pricing: [
         { category: 1, price: 30 },
