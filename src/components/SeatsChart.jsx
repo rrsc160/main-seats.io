@@ -57,13 +57,34 @@ const SeatsChart = () => {
       event: SEATS_CONFIG.eventkey,
       holdToken: token,
        colorScheme: 'dark',
+       colors: {
+        selectedObjectColor: '#E52827'
+     }, 
+      style: {
+    font: 'Inter',
+    cornerRadius: 'round',
+    buttonShape: 'round'
+ },
       divId: "chart-container",
-      pricing: [
+     pricing: [
         { category: 1, price: 30 },
-        { category: 2, price: 40 },
-        { category: 3, price: 50 },
+        { category: 2, ticketTypes: [
+          { ticketType: 'Adult', price: 8 },
+          { ticketType: 'Child', price: 12 }
+        ]},
+        { category: 3, price: 230 }
       ],
-      priceFormatter: (price) => `$${price}`,
+      selectionValidators: [
+        {type: 'noOrphanSeats'},
+        {type: 'consecutiveSeats'},
+        { type: 'minimumSelectedPlaces', minimum: 4 }
+    ],
+    canGASelectionBeIncreased: function(gaArea, defaultValue) {
+      if(gaArea.label === 'Standing') {
+          return gaArea.numBooked + 10 + gaArea.numSelected < gaArea.capacity;        
+      }
+      return defaultValue;
+  },
       session: "manual",
       onObjectSelected: (object) => {
         if (object.status === "reservedByToken" || object.status === "free") {
