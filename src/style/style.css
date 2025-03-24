@@ -57,6 +57,8 @@ body {
   width: 60%;
   height: 40% !important;
   margin-left: -45px;
+   border: ridge;
+  border-color: aquamarine;
   background-color: #30ad9d;
   padding: 15px;
   border-radius: 8px;
@@ -73,6 +75,8 @@ body {
   width: 29%;
   background-color: #aa9e36;
   padding: 15px;
+  border: ridge;
+  border-color: aquamarine;
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(112, 84, 84, 0.2);
   display: flex;
