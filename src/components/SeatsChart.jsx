@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+
+
+import { useEffect, useState, useMemo, useRef, useCallback, lazy, Suspense } from "react";
 import { fetchHoldToken, bookSeats } from "../services/SeatsService";
-import SelectedSeats from "./SelectedSeats";
-import { FaSun, FaMoon } from "react-icons/fa";
-import { FaCheckCircle } from "react-icons/fa";
 import "../style/style.css";
+const SelectedSeats = lazy(() => import("./SelectedSeats"));
 
 const SEATS_CONFIG = {
   Publicworkspacekey: "57069033-6fc3-4e57-8ebc-c4f54d3d742e",
@@ -14,18 +14,19 @@ const SEATS_CONFIG = {
 const SeatsChart = () => {
   const [holdToken, setHoldToken] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [chartInitialized, setChartInitialized] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
   const [theme, setTheme] = useState("day");
+  const chartRef = useRef(null);
 
   useEffect(() => {
     const initializeChart = async () => {
       try {
         const token = await fetchHoldToken(SEATS_CONFIG.Secretworkspacekey);
         setHoldToken(token);
-        loadSeatsIoScript();
+        await loadSeatsIoScript();
+        renderChart(token);
       } catch (error) {
-        console.error("Error fetching hold token:", error);
+        console.error("Error initializing chart:", error);
       }
     };
 
@@ -36,93 +37,59 @@ const SeatsChart = () => {
 
   const loadSeatsIoScript = () => {
     return new Promise((resolve, reject) => {
-      if (window.seatsio) {
-        resolve();
-        return;
-      }
+      if (window.seatsio) return resolve();
 
       const script = document.createElement("script");
       script.src = "https://cdn-eu.seatsio.net/chart.js";
-      script.async = false;
+      script.async = true;
       script.onload = resolve;
-      script.onerror = () =>
-        reject(new Error("Failed to load Seats.io script"));
+      
+      script.onerror = () => reject(new Error("Failed to load Seats.io script"));
       document.body.appendChild(script);
     });
   };
 
-  useEffect(() => {
-    if (!holdToken || chartInitialized) return;
+  const renderChart = useCallback((token) => {
+    if (chartRef.current || !window.seatsio) return;
 
-    if (window.seatsio) {
-      const chart = new window.seatsio.SeatingChart({
-        publicKey: SEATS_CONFIG.Publicworkspacekey,
-        event: SEATS_CONFIG.eventkey,
-        holdToken: holdToken,
-        divId: "chart-container",
-         pricing: [
-            {'category': 1, 'price': 30},
-            {'category': 2, 'price': 40},
-            {'category': 3, 'price': 50}
-        ],
-        priceFormatter: function(price) {
-            return '$' + price;
-        },
-         priceFormatter: function(price) {
-          return '$' + price;
-      },
+    chartRef.current = new window.seatsio.SeatingChart({
+      publicKey: SEATS_CONFIG.Publicworkspacekey,
+      event: SEATS_CONFIG.eventkey,
+      holdToken: token,
+      divId: "chart-container",
       pricing: [
-        {'category': 1, 'ticketTypes': [
-            {'ticketType': 'adult', 'price': 30},
-            {'ticketType': 'child', 'price': 20}
-        ]},
-        {'category': 2, 'ticketTypes': [
-            {'ticketType': 'adult', 'price': 40},
-            {'ticketType': 'child', 'price': 30},
-            {'ticketType': '65+', 'price': 25}
-        ]},
-        {'category': 3, 'price': 50}
-    ],
-    priceFormatter: function(price) {
-        return '$' + price;
-    },
-        session: "manual",
-        onObjectSelected: (object) => {
-          if (object.status === "reservedByToken" || object.status === "free") {
-            setSelectedSeats((prev) => [
-              ...prev,
-              { id: object.id, label: object.label || "N/A" },
-            ]);
-          }
-        },
-        onObjectDeselected: (object) => {
-          setSelectedSeats((prev) =>
-            prev.filter((seat) => seat.id !== object.id)
-          );
-        },
-      });
-      chart.render();
-      setChartInitialized(true);
-    }
-  }, [holdToken, chartInitialized]);
+        { category: 1, price: 30 },
+        { category: 2, price: 40 },
+        { category: 3, price: 50 },
+      ],
+      priceFormatter: (price) => `$${price}`,
+      session: "manual",
+      onObjectSelected: (object) => {
+        if (object.status === "reservedByToken" || object.status === "free") {
+          setSelectedSeats((prev) => [...prev, { id: object.id, label: object.label || "N/A" }]);
+        }
+      },
+      onObjectDeselected: (object) => {
+        setSelectedSeats((prev) => prev.filter((seat) => seat.id !== object.id));
+      },
+    });
+    chartRef.current.render();
+  }, []);
+
+  const memoizedSelectedSeats = useMemo(() => selectedSeats, [selectedSeats]);
 
   const handleBookSeats = async () => {
-    if (selectedSeats.length === 0) {
+    if (memoizedSelectedSeats.length === 0) {
       alert("No seats selected for booking.");
       return;
     }
 
     try {
-      await bookSeats(
-        SEATS_CONFIG.Secretworkspacekey,
-        SEATS_CONFIG.eventkey,
-        selectedSeats
-      );
+      await bookSeats(SEATS_CONFIG.Secretworkspacekey, SEATS_CONFIG.eventkey, memoizedSelectedSeats);
       setAlertMessage("Seats successfully booked!");
       setSelectedSeats([]);
     } catch (error) {
       console.error("Error booking seats:", error);
-
       setAlertMessage("An error occurred while booking the seats.");
     }
   };
@@ -134,28 +101,23 @@ const SeatsChart = () => {
     }
   }, [alertMessage]);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "day" ? "night" : "day"));
-  };
-
   return (
     <div className={`seats-chart-container ${theme}`}>
+
       {alertMessage && (
         <div className="alert-container">
-          <FaCheckCircle className="alert-icon" />
           <div className="alert-message">{alertMessage}</div>
         </div>
       )}
 
-      <button className="theme-toggle-btn" onClick={toggleTheme}>
-        {theme === "day" ? <FaSun /> : <FaMoon />}
-      </button>
+
       <div className="seats-chart-wrapper">
-        <div id="chart-container"></div>
-        <SelectedSeats
-          selectedSeats={selectedSeats}
-          onBookSeats={handleBookSeats}
-        />
+        <div className="chart-box"> 
+          <div id="chart-container"></div>
+        </div>
+        <Suspense fallback={<div>Loading Selected Seats...</div>}>
+          <SelectedSeats selectedSeats={memoizedSelectedSeats} onBookSeats={handleBookSeats} />
+        </Suspense>
       </div>
     </div>
   );
