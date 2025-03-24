@@ -1,3 +1,4 @@
+
 export const fetchHoldToken = async (secretWorkspaceKey) => {
   try {
     const token = btoa(`${secretWorkspaceKey}:`);
@@ -9,11 +10,7 @@ export const fetchHoldToken = async (secretWorkspaceKey) => {
       },
     });
 
-    console.log("Response status:", response.status);
-    console.log("Response headers:", response.headers);
-
-    if (!response.ok)
-      throw new Error(`Failed to fetch hold token: ${response.statusText}`);
+    if (!response.ok) throw new Error(`Failed to fetch hold token: ${response.statusText}`);
 
     const data = await response.json();
     return data.holdToken;
@@ -23,11 +20,7 @@ export const fetchHoldToken = async (secretWorkspaceKey) => {
   }
 };
 
-export const bookSeats = async (
-  secretWorkspaceKey,
-  eventKey,
-  selectedSeats
-) => {
+export const bookSeats = async (secretWorkspaceKey, eventKey, selectedSeats) => {
   try {
     const token = btoa(`${secretWorkspaceKey}:`);
     const response = await fetch(
@@ -48,5 +41,5 @@ export const bookSeats = async (
   } catch (error) {
     console.error("Error booking seats:", error);
     throw error;
-  };
+  }
 };
