@@ -1,29 +1,27 @@
 
+import React, { useMemo, useRef } from "react";
 
 const SelectedSeats = ({ selectedSeats, onBookSeats }) => {
+  const listRef = useRef(null);
+
+  const memoizedSeats = useMemo(() => {
+    return selectedSeats.map((seat) => (
+      <li key={seat.id} className="seat-item">
+        <div className="seat-info">
+          <span className="seat-id">{seat.label}</span>
+          <span className="seat-category">(ID: {seat.id})</span>
+        </div>
+      </li>
+    ));
+  }, [selectedSeats]);
+
   return (
     <div className="selected-seats">
+      <button className="book-seats-btn" onClick={onBookSeats}>
+        BOOK SELECTED SEATS
+      </button>
       <h3>SELECTED SEATS</h3>
-
-      <ul>
-        {selectedSeats.length > 0 ? (
-          selectedSeats.map((seat) => (
-            <li key={seat.id} className="seat-item">
-              <div className="seat-info">
-                <span className="seat-id">{seat.label}</span>
-                <span className="seat-category">(ID: {seat.id})</span>
-              </div>
-            </li>
-          ))
-        ) : (
-          <li className="no-seats">No seats selected.</li>
-        )}
-      </ul>
-      {selectedSeats.length > 0 && (
-        <button className="book-seats-btn" onClick={onBookSeats}>
-          BOOK SELETED SEATS
-        </button>
-      )}
+      <ul ref={listRef}>{memoizedSeats.length > 0 ? memoizedSeats : <li className="no-seats">No seats selected yet.</li>}</ul>
     </div>
   );
 };
