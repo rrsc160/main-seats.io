@@ -5,6 +5,7 @@ import { fetchHoldToken, bookSeats } from "../services/SeatsService";
 import "../style/style.css";
 const SelectedSeats = lazy(() => import("./SelectedSeats"));
 
+//Seats.io Configuration
 const SEATS_CONFIG = {
   publicworkspacekey: "57069033-6fc3-4e57-8ebc-c4f54d3d742e",
   secretworkspacekey: "8cd678c5-d6d5-43f1-b377-255951f6405f",
@@ -16,6 +17,7 @@ const SeatsChart = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [alertMessage, setAlertMessage] = useState(null);
   
+  //Stores a reference to the Seating Chart to prevent unnecessary re-renders.
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ const SeatsChart = () => {
         setHoldToken(token);
         await loadSeatsIoScript();
         renderChart(token);
-      } catch (error) {
+      } catch (error) { 
         console.error("Error initializing chart:", error);
       }
     };
@@ -86,11 +88,24 @@ const SeatsChart = () => {
   },
      
       session: "manual",
+      // onObjectSelected: (object) => {
+      //   if (object.status === "reservedByToken" || object.status === "free") {
+      //     setSelectedSeats((prev) => [...prev, { id: object.id, label: object.label || "N/A" }]);
+      //   }
+      // },
       onObjectSelected: (object) => {
         if (object.status === "reservedByToken" || object.status === "free") {
-          setSelectedSeats((prev) => [...prev, { id: object.id, label: object.label || "N/A" }]);
+          setSelectedSeats((prev) => [
+            ...prev, 
+            { 
+              id: object.id, 
+              label: object.label || "N/A", 
+              price: object.pricing?.price || "N/A"  // Store price from pricing object
+            }
+          ]);
         }
       },
+      
       onObjectDeselected: (object) => {
         setSelectedSeats((prev) => prev.filter((seat) => seat.id !== object.id));
       },
@@ -108,7 +123,7 @@ const SeatsChart = () => {
 
     try {
       await bookSeats(SEATS_CONFIG.secretworkspacekey, SEATS_CONFIG.eventkey, memoizedSelectedSeats);
-      setAlertMessage("Seats successfully booked!");
+      setAlertMessage("Seat successfully booked!");
       setSelectedSeats([]);
     } catch (error) {
       console.error("Error booking seats:", error);
