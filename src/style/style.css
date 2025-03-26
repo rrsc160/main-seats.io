@@ -1,3 +1,4 @@
+/* General Styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #9fb348;
@@ -6,14 +7,17 @@ body {
   padding: 0;
 }
 
+/* Seats Chart Container */
 .seats-chart-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
   background-color: #9fb348;
+  width: 100%;
 }
 
+/* Responsive Alert Box */
 .alert-container {
   display: flex;
   align-items: center;
@@ -23,62 +27,42 @@ body {
   border-radius: 5px;
   margin-bottom: 15px;
   font-size: 16px;
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
 }
 
-.alert-icon {
-  margin-right: 8px;
-}
-
-.theme-toggle-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
-  color: white;
-  transition: color 0.3s ease-in-out;
-}
-
-.theme-toggle-btn:hover {
-  color: #a9ac19;
-}
-
+/* Chart and Selected Seats Layout */
 .seats-chart-wrapper {
   display: flex;
   justify-content: space-between;
-  width: 80%;
+  width: 90%;
   max-width: 1000px;
   gap: 15px;
   margin-top: 20px;
 }
 
+/* Chart Box */
 .chart-box {
-  width: 60%;
-  height: 40% !important;
-  margin-left: -45px;
+  flex: 1;
   background-color: #44bba1;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   border: ridge;
   border-color: #1a221f;
-  /* border-color: aquamarine; */
-
 }
 
 #chart-container {
   width: 100%;
   height: 450px;
-
 }
 
+/* Selected Seats Panel */
 .selected-seats {
-  width: 29%;
+  width: 30%;
   background-color: #aa9e36;
   border: ridge;
-  /* border-color: aquamarine; */
   border-color: #1a221f;
   padding: 15px;
   border-radius: 8px;
@@ -87,9 +71,10 @@ body {
   flex-direction: column;
   position: relative;
   height: 300px;
+  overflow: hidden;
 }
 
-
+/* Selected Seats Responsive */
 .selected-seats h3 {
   text-align: center;
   font-size: 16px;
@@ -101,19 +86,22 @@ body {
 
 .book-seats-btn {
   position: absolute;
-  top: 62px;
-  left: 50%;
-  right: -22px;
-  transform: translateX(-50%);
+  top: 59px;
+  left: 46%;
+  transform: translateX(-42%);
   background-color: #cc2e50;
   color: white;
   border: none;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 11px;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 6px;
   font-weight: bold;
-  transition: background 0.3s ease-in-out;
+  transition: background 1.3s ease-in-out;
+}
+
+.no-seats {
+  margin-left: 72px;
 }
 
 .book-seats-btn:hover {
@@ -123,7 +111,7 @@ body {
 .selected-seats ul {
   list-style-type: none;
   padding: 0;
-  margin-top: 45px;
+  margin-top: 50px;
   flex-grow: 1;
   overflow-y: auto;
   max-height: 250px;
@@ -136,19 +124,24 @@ body {
   padding: 8px;
   margin: 4px 0;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.selected-seats .seat-id {
-  font-weight: small;
-}
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .seats-chart-wrapper {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
 
-.no-seats {
-  text-align: center;
-  font-size: 14px;
-  color: #c21a1a;
-}
+  .chart-box {
+    width: 90%;
+  }
 
-.loading-text {
-  color: rgb(247, 10, 10);
+  .selected-seats {
+    width: 90%;
+    margin-top: 20px;
+    height: auto;
+  }
 }
