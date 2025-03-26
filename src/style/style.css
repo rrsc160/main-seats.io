@@ -140,7 +140,7 @@ body {
 }
 
 .selected-seats .seat-id {
-  font-weight: bold;
+  font-weight: small;
 }
 
 .no-seats {
