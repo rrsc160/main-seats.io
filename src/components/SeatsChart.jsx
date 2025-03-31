@@ -59,6 +59,8 @@ const SeatsChart = () => {
       holdToken: token,
       loading: "<div class='loader'>Loading...</div>",
             showSeatLabels: true,
+       showLegend: true,
+            showFullScreenButton: true,
        colorScheme: 'dark',
        colors: {
         selectedObjectColor: '#E52827'
