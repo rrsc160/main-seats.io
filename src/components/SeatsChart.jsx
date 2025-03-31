@@ -57,6 +57,8 @@ const SeatsChart = () => {
       publicKey: SEATS_CONFIG.publicworkspacekey,
       event: SEATS_CONFIG.eventkey,
       holdToken: token,
+      loading: "<div class='loader'>Loading...</div>",
+            showSeatLabels: true,
        colorScheme: 'dark',
        colors: {
         selectedObjectColor: '#E52827'
